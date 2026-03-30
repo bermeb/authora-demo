@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import {
   getUser,
@@ -22,20 +23,21 @@ export function UserDetailPage() {
   const [user, setUser] = useState<AdminUserView | null>(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
+  const { t } = useTranslation()
 
   async function load() {
     if (!id) return
     try {
       setUser(await getUser(id))
     } catch {
-      toast.error('Benutzer nicht gefunden.')
+      toast.error(t('admin.userDetail.toastFailed'))
       navigate('/admin/users')
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { void load() }, [id])
+  useEffect(() => { void load() }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function action(fn: () => Promise<unknown>, successMsg: string) {
     setBusy(true)
@@ -44,7 +46,7 @@ export function UserDetailPage() {
       toast.success(successMsg)
       void load()
     } catch {
-      toast.error('Aktion fehlgeschlagen.')
+      toast.error(t('admin.userDetail.toastFailed'))
     } finally {
       setBusy(false)
     }
@@ -58,7 +60,7 @@ export function UserDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Link to="/admin/users" className="text-sm text-indigo-600 hover:underline">
-          ← Zurück
+          {t('admin.userDetail.back')}
         </Link>
         <h1 className="text-2xl font-bold text-gray-900">
           {user.firstName} {user.lastName}
@@ -67,16 +69,16 @@ export function UserDetailPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
-          <h2 className="mb-4 text-base font-semibold text-gray-800">Benutzerdaten</h2>
+          <h2 className="mb-4 text-base font-semibold text-gray-800">{t('admin.userDetail.userData')}</h2>
           <dl className="space-y-2 text-sm">
             {[
-              ['ID', <span className="font-mono text-xs text-gray-500">{user.id}</span>],
-              ['E-Mail', user.email],
-              ['E-Mail verifiziert', user.emailVerified ? 'Ja' : 'Nein'],
-              ['OAuth-Provider', user.oauthProvider ?? '–'],
-              ['Fehlgeschl. Logins', user.failedLoginAttempts],
-              ['Konto erstellt', formatDate(user.createdAt)],
-              ['Letzter Login', user.lastLoginAt ? formatDate(user.lastLoginAt) : '–'],
+              [t('admin.userDetail.id'), <span className="font-mono text-xs text-gray-500">{user.id}</span>],
+              [t('admin.userDetail.email'), user.email],
+              [t('admin.userDetail.emailVerified'), user.emailVerified ? t('admin.userDetail.active') : t('admin.userDetail.inactive')],
+              [t('admin.userDetail.oauthProvider'), user.oauthProvider ?? '–'],
+              [t('admin.userDetail.failedAttempts'), user.failedLoginAttempts],
+              [t('admin.userDetail.createdAt'), formatDate(user.createdAt)],
+              [t('admin.userDetail.lastLogin'), user.lastLoginAt ? formatDate(user.lastLoginAt) : '–'],
             ].map(([k, v]) => (
               <div key={String(k)} className="flex justify-between gap-4">
                 <dt className="font-medium text-gray-500">{k}</dt>
@@ -84,7 +86,7 @@ export function UserDetailPage() {
               </div>
             ))}
             <div className="flex justify-between gap-4">
-              <dt className="font-medium text-gray-500">Rollen</dt>
+              <dt className="font-medium text-gray-500">{t('admin.userDetail.roles')}</dt>
               <dd className="flex flex-wrap justify-end gap-1">
                 {user.roles.map((r) => <RoleBadge key={r} role={r} />)}
               </dd>
@@ -93,20 +95,20 @@ export function UserDetailPage() {
         </Card>
 
         <Card>
-          <h2 className="mb-4 text-base font-semibold text-gray-800">Status</h2>
+          <h2 className="mb-4 text-base font-semibold text-gray-800">{t('admin.userDetail.status')}</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Konto aktiv</span>
+              <span className="text-sm text-gray-600">{t('admin.userDetail.status')}</span>
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                   user.enabled ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                 }`}
               >
-                {user.enabled ? 'Aktiv' : 'Inaktiv'}
+                {user.enabled ? t('admin.userDetail.active') : t('admin.userDetail.inactive')}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Gesperrt</span>
+              <span className="text-sm text-gray-600">{t('admin.userDetail.accountLocked')}</span>
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                   user.accountLocked
@@ -114,18 +116,20 @@ export function UserDetailPage() {
                     : 'bg-gray-100 text-gray-600'
                 }`}
               >
-                {user.accountLocked ? 'Gesperrt' : 'Entsperrt'}
+                {user.accountLocked ? t('admin.userDetail.accountLocked') : t('admin.userDetail.accountUnlocked')}
               </span>
             </div>
             {user.lockedUntil && (
-              <p className="text-xs text-gray-500">Gesperrt bis: {formatDate(user.lockedUntil)}</p>
+              <p className="text-xs text-gray-500">
+                {t('admin.userDetail.lockedUntil', { date: formatDate(user.lockedUntil) })}
+              </p>
             )}
           </div>
         </Card>
       </div>
 
       <Card>
-        <h2 className="mb-4 text-base font-semibold text-gray-800">Aktionen</h2>
+        <h2 className="mb-4 text-base font-semibold text-gray-800">{t('admin.userDetail.actions')}</h2>
         <div className="flex flex-wrap gap-3">
           <Button
             variant={user.accountLocked ? 'ghost' : 'danger'}
@@ -133,11 +137,11 @@ export function UserDetailPage() {
             onClick={() =>
               action(
                 () => setLock(user.id, !user.accountLocked),
-                user.accountLocked ? 'Entsperrt.' : 'Gesperrt.',
+                user.accountLocked ? t('admin.userDetail.toastUnlocked') : t('admin.userDetail.toastLocked'),
               )
             }
           >
-            {user.accountLocked ? 'Entsperren' : 'Sperren'}
+            {user.accountLocked ? t('admin.userDetail.unlockUser') : t('admin.userDetail.lockUser')}
           </Button>
           <Button
             variant={user.enabled ? 'danger' : 'ghost'}
@@ -145,11 +149,11 @@ export function UserDetailPage() {
             onClick={() =>
               action(
                 () => setEnabled(user.id, !user.enabled),
-                user.enabled ? 'Deaktiviert.' : 'Aktiviert.',
+                user.enabled ? t('admin.userDetail.toastDeactivated') : t('admin.userDetail.toastActivated'),
               )
             }
           >
-            {user.enabled ? 'Deaktivieren' : 'Aktivieren'}
+            {user.enabled ? t('admin.userDetail.deactivate') : t('admin.userDetail.activate')}
           </Button>
           <Button
             variant={isAdmin ? 'danger' : 'ghost'}
@@ -157,23 +161,23 @@ export function UserDetailPage() {
             onClick={() =>
               action(
                 () => (isAdmin ? removeRole(user.id, 'ADMIN') : assignRole(user.id, 'ADMIN')),
-                isAdmin ? 'Admin-Rolle entfernt.' : 'Admin-Rolle zugewiesen.',
+                isAdmin ? t('admin.userDetail.toastAdminRemoved') : t('admin.userDetail.toastAdminAssigned'),
               )
             }
           >
-            {isAdmin ? 'Admin-Rolle entfernen' : 'Admin-Rolle zuweisen'}
+            {isAdmin ? t('admin.userDetail.removeAdmin') : t('admin.userDetail.assignAdmin')}
           </Button>
           <Button
             variant="danger"
             loading={busy}
             onClick={() =>
-              action(() => revokeSessions(user.id), 'Alle Sitzungen widerrufen.')
+              action(() => revokeSessions(user.id), t('admin.userDetail.toastSessionsRevoked'))
             }
           >
-            Alle Sitzungen widerrufen
+            {t('admin.userDetail.revokeSessions')}
           </Button>
           <Link to={`/admin/audit-logs?userId=${user.id}`}>
-            <Button variant="ghost">Audit-Log ansehen</Button>
+            <Button variant="ghost">{t('admin.userDetail.viewAuditLog')}</Button>
           </Link>
         </div>
       </Card>

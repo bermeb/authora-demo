@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { cn } from '../../lib/utils'
 
 interface Check {
@@ -10,12 +11,14 @@ interface PasswordStrengthProps {
 }
 
 export function PasswordStrength({ password }: PasswordStrengthProps) {
+  const { t } = useTranslation()
+
   const checks: Check[] = [
-    { label: 'Mindestens 12 Zeichen', ok: password.length >= 12 },
-    { label: 'Großbuchstabe', ok: /[A-Z]/.test(password) },
-    { label: 'Kleinbuchstabe', ok: /[a-z]/.test(password) },
-    { label: 'Ziffer', ok: /\d/.test(password) },
-    { label: 'Sonderzeichen', ok: /[^A-Za-z0-9]/.test(password) },
+    { label: t('passwordStrength.minLength'), ok: password.length >= 12 },
+    { label: t('passwordStrength.uppercase'), ok: /[A-Z]/.test(password) },
+    { label: t('passwordStrength.lowercase'), ok: /[a-z]/.test(password) },
+    { label: t('passwordStrength.digit'), ok: /\d/.test(password) },
+    { label: t('passwordStrength.special'), ok: /[^A-Za-z0-9]/.test(password) },
   ]
   const passed = checks.filter((c) => c.ok).length
   const strengthColor =

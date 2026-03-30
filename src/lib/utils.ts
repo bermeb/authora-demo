@@ -1,11 +1,13 @@
-import type { AuditEventType } from '../types/api'
+import type { AuditEventType, ProblemDetail } from '../types/api'
+import i18n from '../i18n'
 
 export function cn(...classes: (string | undefined | false | null)[]): string {
   return classes.filter(Boolean).join(' ')
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('de-DE', {
+  const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
+  return new Date(iso).toLocaleString(locale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -43,4 +45,18 @@ export function eventTypeColor(type: AuditEventType): string {
 
 export function getInitials(firstName: string, lastName: string): string {
   return `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase()
+}
+
+export function extractProblemDetail(err: unknown): ProblemDetail {
+  if (
+    err &&
+    typeof err === 'object' &&
+    'response' in err &&
+    err.response &&
+    typeof err.response === 'object' &&
+    'data' in err.response
+  ) {
+    return err.response.data as ProblemDetail
+  }
+  return { status: 500, detail: i18n.t('errors.defaultDetail') }
 }

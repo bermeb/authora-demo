@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { logout, logoutAll } from '../../api/auth'
 import { useAuthStore } from '../../lib/authStore'
@@ -13,6 +14,7 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const [loggingOut, setLoggingOut] = useState(false)
   const [loggingOutAll, setLoggingOutAll] = useState(false)
+  const { t } = useTranslation()
 
   if (!user) return null
 
@@ -29,7 +31,7 @@ export function DashboardPage() {
     setLoggingOutAll(true)
     try {
       await logoutAll()
-      toast.success('Alle Sitzungen beendet.')
+      toast.success(t('dashboard.logoutAllSuccess'))
     } catch { /* ignore */ }
     clear()
     navigate('/login')
@@ -37,7 +39,7 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h1>
 
       <Card>
         <div className="flex items-start gap-4">
@@ -60,12 +62,12 @@ export function DashboardPage() {
                     : 'bg-yellow-100 text-yellow-700'
                 }`}
               >
-                {user.emailVerified ? 'E-Mail verifiziert' : 'E-Mail nicht verifiziert'}
+                {user.emailVerified ? t('dashboard.emailVerified') : t('dashboard.emailNotVerified')}
               </span>
             </div>
             {user.createdAt && (
               <p className="pt-1 text-xs text-gray-400">
-                Konto erstellt: {formatDate(user.createdAt)}
+                {t('dashboard.createdAt', { date: formatDate(user.createdAt) })}
               </p>
             )}
           </div>
@@ -74,25 +76,25 @@ export function DashboardPage() {
 
       <div className="flex flex-wrap gap-3">
         <Link to="/profile">
-          <Button variant="ghost">Profil & Passwort</Button>
+          <Button variant="ghost">{t('dashboard.profile')}</Button>
         </Link>
         <Button
           variant="ghost"
           loading={loggingOut}
           onClick={() => { void handleLogout() }}
         >
-          Dieses Gerät abmelden
+          {t('dashboard.logoutDevice')}
         </Button>
         <Button
           variant="danger"
           loading={loggingOutAll}
           onClick={() => { void handleLogoutAll() }}
         >
-          Alle Geräte abmelden
+          {t('dashboard.logoutAll')}
         </Button>
         {user.roles.includes('ADMIN') && (
           <Link to="/admin">
-            <Button>Admin-Bereich</Button>
+            <Button>{t('dashboard.adminArea')}</Button>
           </Link>
         )}
       </div>

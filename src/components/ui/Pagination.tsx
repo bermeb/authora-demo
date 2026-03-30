@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 interface PaginationProps {
   page: number
   totalPages: number
@@ -5,6 +7,8 @@ interface PaginationProps {
 }
 
 export function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
+  const { t } = useTranslation()
+
   if (totalPages <= 1) return null
   return (
     <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -13,17 +17,17 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
         onClick={() => onPageChange(page - 1)}
         className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        Zurück
+        {t('common.prev')}
       </button>
       <span className="text-sm text-gray-600">
-        Seite {page + 1} von {totalPages}
+        {t('common.pageOf', { page: page + 1, total: totalPages })}
       </span>
       <button
         disabled={page + 1 >= totalPages}
         onClick={() => onPageChange(page + 1)}
         className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        Weiter
+        {t('common.next')}
       </button>
     </div>
   )

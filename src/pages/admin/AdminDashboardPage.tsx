@@ -1,23 +1,26 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card } from '../../components/ui/Card'
 
-const sections = [
-  {
-    to: '/admin/users',
-    title: 'Benutzerverwaltung',
-    description: 'Alle Benutzer anzeigen, sperren, aktivieren und Rollen verwalten.',
-  },
-  {
-    to: '/admin/audit-logs',
-    title: 'Audit-Logs',
-    description: 'Sicherheitsereignisse und Aktivitäten aller Benutzer einsehen.',
-  },
-]
-
 export function AdminDashboardPage() {
+  const { t } = useTranslation()
+
+  const sections = [
+    {
+      to: '/admin/users',
+      title: t('admin.dashboard.usersTitle'),
+      description: t('admin.dashboard.usersDesc'),
+    },
+    {
+      to: '/admin/audit-logs',
+      title: t('admin.dashboard.logsTitle'),
+      description: t('admin.dashboard.logsDesc'),
+    },
+  ]
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Admin-Bereich</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{t('admin.dashboard.title')}</h1>
       <div className="grid gap-4 sm:grid-cols-2">
         {sections.map((s) => (
           <Link key={s.to} to={s.to}>

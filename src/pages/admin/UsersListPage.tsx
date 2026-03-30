@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { listUsers, setLock, setEnabled } from '../../api/admin'
 import { Card } from '../../components/ui/Card'
@@ -14,48 +15,61 @@ export function UsersListPage() {
   const [data, setData] = useState<PaginatedUserResponse | null>(null)
   const [page, setPage] = useState(0)
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslation()
 
   const load = useCallback(async (p: number) => {
     setLoading(true)
     try {
       setData(await listUsers(p, 20))
     } catch {
-      toast.error('Benutzer konnten nicht geladen werden.')
+      toast.error(t('admin.users.toastFailed'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => { void load(page) }, [load, page])
 
   async function toggleLock(user: AdminUserView) {
     try {
       await setLock(user.id, !user.accountLocked)
-      toast.success(user.accountLocked ? 'Entsperrt.' : 'Gesperrt.')
+      toast.success(user.accountLocked ? t('admin.users.toastUnlocked') : t('admin.users.toastLocked'))
       void load(page)
     } catch {
-      toast.error('Aktion fehlgeschlagen.')
+      toast.error(t('admin.users.toastFailed'))
     }
   }
 
   async function toggleEnabled(user: AdminUserView) {
     try {
       await setEnabled(user.id, !user.enabled)
-      toast.success(user.enabled ? 'Deaktiviert.' : 'Aktiviert.')
+      toast.success(user.enabled ? t('admin.users.toastDeactivated') : t('admin.users.toastActivated'))
       void load(page)
     } catch {
-      toast.error('Aktion fehlgeschlagen.')
+      toast.error(t('admin.users.toastFailed'))
     }
   }
 
   if (loading && !data) return <FullPageSpinner />
 
+  const headers = [
+    t('admin.users.columns.name'),
+    t('admin.users.columns.email'),
+    t('admin.users.columns.roles'),
+    t('admin.users.columns.active'),
+    t('admin.users.columns.locked'),
+    t('admin.users.columns.created'),
+    '',
+  ]
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Benutzer</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('admin.users.title')}</h1>
         {data && (
-          <span className="text-sm text-gray-500">{data.totalElements} gesamt</span>
+          <span className="text-sm text-gray-500">
+            {t('admin.users.total', { count: data.totalElements })}
+          </span>
         )}
       </div>
       <Card className="p-0 overflow-hidden">
@@ -63,9 +77,9 @@ export function UsersListPage() {
           <table className="min-w-full divide-y divide-gray-200 text-sm">
             <thead className="bg-gray-50">
               <tr>
-                {['Name', 'E-Mail', 'Rollen', 'Aktiv', 'Gesperrt', 'Erstellt', ''].map((h) => (
+                {headers.map((h, i) => (
                   <th
-                    key={h}
+                    key={i}
                     className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"
                   >
                     {h}
@@ -98,7 +112,7 @@ export function UsersListPage() {
                           : 'bg-red-100 text-red-700 hover:bg-red-200'
                       }`}
                     >
-                      {user.enabled ? 'Aktiv' : 'Inaktiv'}
+                      {user.enabled ? t('admin.users.active') : t('admin.users.inactive')}
                     </button>
                   </td>
                   <td className="px-4 py-3">
@@ -110,14 +124,14 @@ export function UsersListPage() {
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
-                      {user.accountLocked ? 'Gesperrt' : 'Entsperrt'}
+                      {user.accountLocked ? t('admin.users.locked') : t('admin.users.unlocked')}
                     </button>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-gray-500">
                     {formatDate(user.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-indigo-600 hover:underline text-xs">
-                    Details
+                    {t('admin.users.details')}
                   </td>
                 </tr>
               ))}

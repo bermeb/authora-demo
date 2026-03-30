@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import api from '../../lib/axios'
 import { getMe } from '../../api/profile'
 import { useAuthStore } from '../../lib/authStore'
@@ -12,6 +13,7 @@ export function OAuthCallbackPage() {
   const { setTokens, setUser } = useAuthStore()
   const [error, setError] = useState<string | null>(null)
   const called = useRef(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (called.current) return
@@ -21,12 +23,12 @@ export function OAuthCallbackPage() {
     const errorParam = searchParams.get('error')
 
     if (errorParam) {
-      setError(`OAuth2-Fehler: ${errorParam}`)
+      setError(t('auth.oauth.error', { error: errorParam }))
       return
     }
 
     if (!code) {
-      setError('Kein Code erhalten.')
+      setError(t('auth.oauth.noCode'))
       return
     }
 
@@ -39,9 +41,9 @@ export function OAuthCallbackPage() {
         navigate('/dashboard', { replace: true })
       })
       .catch(() => {
-        setError('Login fehlgeschlagen. Bitte erneut versuchen.')
+        setError(t('auth.oauth.failed'))
       })
-  }, [searchParams, navigate, setTokens, setUser])
+  }, [searchParams, navigate, setTokens, setUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (error) {
     return (
@@ -52,7 +54,7 @@ export function OAuthCallbackPage() {
             onClick={() => navigate('/login')}
             className="mt-4 text-sm text-indigo-600 hover:underline"
           >
-            Zurück zum Login
+            {t('auth.forgotPassword.back')}
           </button>
         </Card>
       </div>
@@ -63,7 +65,7 @@ export function OAuthCallbackPage() {
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="text-center space-y-3">
         <Spinner />
-        <p className="text-gray-600 text-sm">Anmeldung wird abgeschlossen…</p>
+        <p className="text-gray-600 text-sm">{t('auth.oauth.loading')}</p>
       </div>
     </div>
   )
