@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
+import i18n from '../../i18n'
 import { allAuditLogs, userAuditLogs } from '../../api/admin'
 import { Card } from '../../components/ui/Card'
 import { EventTypeBadge } from '../../components/ui/Badge'
@@ -25,12 +26,12 @@ export function AuditLogsPage() {
       try {
         setData(uid ? await userAuditLogs(uid, p, 50) : await allAuditLogs(p, 50))
       } catch {
-        toast.error(t('admin.auditLogs.toastError'))
+        toast.error(i18n.t('admin.auditLogs.toastError'))
       } finally {
         setLoading(false)
       }
     },
-    [t],
+    [],
   )
 
   useEffect(() => {

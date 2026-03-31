@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
+import i18n from '../../i18n'
 import {
   getUser,
   setLock,
@@ -25,19 +26,19 @@ export function UserDetailPage() {
   const [busy, setBusy] = useState(false)
   const { t } = useTranslation()
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!id) return
     try {
       setUser(await getUser(id))
     } catch {
-      toast.error(t('admin.userDetail.toastFailed'))
+      toast.error(i18n.t('admin.userDetail.toastFailed'))
       navigate('/admin/users')
     } finally {
       setLoading(false)
     }
-  }
+  }, [id, navigate])
 
-  useEffect(() => { void load() }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { void load() }, [load])
 
   async function action(fn: () => Promise<unknown>, successMsg: string) {
     setBusy(true)

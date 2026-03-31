@@ -173,9 +173,6 @@ export const de = {
         details: 'Details',
       },
       toastError: 'Logs konnten nicht geladen werden.',
-      prev: 'Zurück',
-      pageOf: 'Seite {{page}} von {{total}}',
-      next: 'Weiter',
     },
   },
   validation: {
