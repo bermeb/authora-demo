@@ -5,6 +5,7 @@ import { logout } from '../../api/auth'
 import { Button } from '../ui/Button'
 import { getInitials } from '../../lib/utils'
 import { LanguageSelect } from '../ui/LanguageSelect'
+import logo from '/favicon.ico'
 
 export function Navbar() {
   const { user, accessToken, refreshToken, clear } = useAuthStore()
@@ -30,7 +31,7 @@ export function Navbar() {
           to={accessToken ? '/dashboard' : '/login'}
           className="flex items-center gap-2 text-lg font-bold text-indigo-600"
         >
-          <img src="/favicon.ico" alt="Authora" className="h-7 w-7" />
+          <img src={logo} alt="Authora" className="h-7 w-7" />
           <span>Authora</span>
         </Link>
 
