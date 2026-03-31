@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { ProblemDetail } from '../../types/api'
 
 interface ErrorBannerProps {
@@ -5,6 +6,8 @@ interface ErrorBannerProps {
 }
 
 export function ErrorBanner({ error }: ErrorBannerProps) {
+  const { t } = useTranslation()
+
   if (!error) return null
 
   if (typeof error === 'string') {
@@ -17,7 +20,7 @@ export function ErrorBanner({ error }: ErrorBannerProps) {
 
   return (
     <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-      <p className="font-medium">{error.detail ?? error.title ?? 'Ein Fehler ist aufgetreten.'}</p>
+      <p className="font-medium">{error.detail ?? error.title ?? t('errors.defaultTitle')}</p>
       {error.errors && Object.keys(error.errors).length > 0 && (
         <ul className="mt-2 list-inside list-disc space-y-0.5">
           {Object.entries(error.errors).map(([field, msg]) => (
@@ -29,18 +32,4 @@ export function ErrorBanner({ error }: ErrorBannerProps) {
       )}
     </div>
   )
-}
-
-export function extractProblemDetail(err: unknown): ProblemDetail {
-  if (
-    err &&
-    typeof err === 'object' &&
-    'response' in err &&
-    err.response &&
-    typeof err.response === 'object' &&
-    'data' in err.response
-  ) {
-    return err.response.data as ProblemDetail
-  }
-  return { status: 500, detail: 'Ein unbekannter Fehler ist aufgetreten.' }
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
+import i18n from '../../i18n'
 import { allAuditLogs, userAuditLogs } from '../../api/admin'
 import { Card } from '../../components/ui/Card'
 import { EventTypeBadge } from '../../components/ui/Badge'
@@ -16,6 +18,7 @@ export function AuditLogsPage() {
   const [loading, setLoading] = useState(true)
   const [userIdInput, setUserIdInput] = useState(searchParams.get('userId') ?? '')
   const [activeUserId, setActiveUserId] = useState(searchParams.get('userId') ?? '')
+  const { t } = useTranslation()
 
   const load = useCallback(
     async (p: number, uid: string) => {
@@ -23,7 +26,7 @@ export function AuditLogsPage() {
       try {
         setData(uid ? await userAuditLogs(uid, p, 50) : await allAuditLogs(p, 50))
       } catch {
-        toast.error('Logs konnten nicht geladen werden.')
+        toast.error(i18n.t('admin.auditLogs.toastError'))
       } finally {
         setLoading(false)
       }
@@ -48,12 +51,22 @@ export function AuditLogsPage() {
 
   if (loading && !data) return <FullPageSpinner />
 
+  const headers = [
+    t('admin.auditLogs.columns.time'),
+    t('admin.auditLogs.columns.event'),
+    t('admin.auditLogs.columns.user'),
+    t('admin.auditLogs.columns.ip'),
+    t('admin.auditLogs.columns.details'),
+  ]
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Audit-Logs</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('admin.auditLogs.title')}</h1>
         {data && (
-          <span className="text-sm text-gray-500">{data.totalElements} Einträge</span>
+          <span className="text-sm text-gray-500">
+            {t('admin.auditLogs.total', { count: data.totalElements })}
+          </span>
         )}
       </div>
 
@@ -61,7 +74,7 @@ export function AuditLogsPage() {
         <form onSubmit={handleFilter} className="flex gap-2">
           <input
             type="text"
-            placeholder="User-ID filtern (leer = alle)"
+            placeholder={t('admin.auditLogs.filterPlaceholder')}
             value={userIdInput}
             onChange={(e) => setUserIdInput(e.target.value)}
             className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -70,7 +83,7 @@ export function AuditLogsPage() {
             type="submit"
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           >
-            Filtern
+            {t('admin.auditLogs.filter')}
           </button>
           {activeUserId && (
             <button
@@ -83,7 +96,7 @@ export function AuditLogsPage() {
               }}
               className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
             >
-              Zurücksetzen
+              {t('admin.auditLogs.reset')}
             </button>
           )}
         </form>
@@ -94,7 +107,7 @@ export function AuditLogsPage() {
           <table className="min-w-full divide-y divide-gray-200 text-sm">
             <thead className="bg-gray-50">
               <tr>
-                {['Zeitpunkt', 'Ereignis', 'Benutzer', 'IP-Adresse', 'Details'].map((h) => (
+                {headers.map((h) => (
                   <th
                     key={h}
                     className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"
@@ -127,7 +140,7 @@ export function AuditLogsPage() {
               {data?.content.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">
-                    Keine Einträge gefunden.
+                    {t('admin.auditLogs.noEntries')}
                   </td>
                 </tr>
               )}

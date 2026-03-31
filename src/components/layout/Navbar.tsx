@@ -1,13 +1,15 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../lib/authStore'
 import { logout } from '../../api/auth'
 import { Button } from '../ui/Button'
 import { getInitials } from '../../lib/utils'
-import toast from 'react-hot-toast'
+import { LanguageSelect } from '../ui/LanguageSelect'
 
 export function Navbar() {
   const { user, accessToken, refreshToken, clear } = useAuthStore()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   async function handleLogout() {
     if (refreshToken) {
@@ -24,8 +26,12 @@ export function Navbar() {
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <Link to={accessToken ? '/dashboard' : '/login'} className="text-lg font-bold text-indigo-600">
-          Authora
+        <Link
+          to={accessToken ? '/dashboard' : '/login'}
+          className="flex items-center gap-2 text-lg font-bold text-indigo-600"
+        >
+          <img src="/favicon.ico" alt="Authora" className="h-7 w-7" />
+          <span>Authora</span>
         </Link>
 
         {accessToken && user ? (
@@ -35,7 +41,7 @@ export function Navbar() {
                 to="/admin"
                 className="text-sm font-medium text-gray-600 hover:text-indigo-600"
               >
-                Admin
+                {t('nav.admin')}
               </Link>
             )}
             <Link
@@ -47,17 +53,19 @@ export function Navbar() {
               </div>
               {user.firstName}
             </Link>
+            <LanguageSelect />
             <Button variant="ghost" onClick={() => { void handleLogout() }}>
-              Logout
+              {t('nav.logout')}
             </Button>
           </div>
         ) : (
           <div className="flex items-center gap-2">
+            <LanguageSelect />
             <Link to="/login">
-              <Button variant="ghost">Login</Button>
+              <Button variant="ghost">{t('nav.login')}</Button>
             </Link>
             <Link to="/register">
-              <Button>Registrieren</Button>
+              <Button>{t('nav.register')}</Button>
             </Link>
           </div>
         )}
@@ -65,5 +73,3 @@ export function Navbar() {
     </header>
   )
 }
-
-export { toast }

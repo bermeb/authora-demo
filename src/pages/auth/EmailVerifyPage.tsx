@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { verifyEmail } from '../../api/email'
 import { Card } from '../../components/ui/Card'
 import { FullPageSpinner } from '../../components/ui/Spinner'
-import { extractProblemDetail } from '../../components/ui/ErrorBanner'
+import { extractProblemDetail } from '../../lib/utils'
 
 export function EmailVerifyPage() {
   const [params] = useSearchParams()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState('')
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = params.get('token')
     if (!token) {
-      setErrorMsg('Kein Token in der URL.')
+      setErrorMsg(t('auth.emailVerify.noToken'))
       setStatus('error')
       return
     }
@@ -21,10 +23,10 @@ export function EmailVerifyPage() {
       .then(() => setStatus('success'))
       .catch((err) => {
         const p = extractProblemDetail(err)
-        setErrorMsg(p.detail ?? 'Token ungültig oder abgelaufen.')
+        setErrorMsg(p.detail ?? t('auth.emailVerify.invalidToken'))
         setStatus('error')
       })
-  }, [params])
+  }, [params]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (status === 'loading') return <FullPageSpinner />
 
@@ -34,25 +36,25 @@ export function EmailVerifyPage() {
         {status === 'success' ? (
           <>
             <div className="mb-4 text-4xl">✅</div>
-            <h2 className="mb-2 text-lg font-bold text-gray-900">E-Mail bestätigt!</h2>
-            <p className="text-sm text-gray-600">Dein Konto ist jetzt aktiv.</p>
+            <h2 className="mb-2 text-lg font-bold text-gray-900">{t('auth.emailVerify.successTitle')}</h2>
+            <p className="text-sm text-gray-600">{t('auth.emailVerify.successMessage')}</p>
             <Link
               to="/login"
               className="mt-4 inline-block text-sm text-indigo-600 hover:underline"
             >
-              Jetzt anmelden
+              {t('auth.emailVerify.goToLogin')}
             </Link>
           </>
         ) : (
           <>
             <div className="mb-4 text-4xl">❌</div>
-            <h2 className="mb-2 text-lg font-bold text-gray-900">Bestätigung fehlgeschlagen</h2>
+            <h2 className="mb-2 text-lg font-bold text-gray-900">{t('auth.emailVerify.errorTitle')}</h2>
             <p className="text-sm text-gray-600">{errorMsg}</p>
             <Link
               to="/login"
               className="mt-4 inline-block text-sm text-indigo-600 hover:underline"
             >
-              Zur Anmeldung
+              {t('auth.register.goToLogin')}
             </Link>
           </>
         )}

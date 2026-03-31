@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import toast from 'react-hot-toast'
 import { getMe } from '../../api/profile'
 import { changePassword } from '../../api/password'
@@ -11,23 +13,25 @@ import { Card } from '../../components/ui/Card'
 import { Input } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
 import { RoleBadge } from '../../components/ui/Badge'
-import { ErrorBanner, extractProblemDetail } from '../../components/ui/ErrorBanner'
+import { ErrorBanner } from '../../components/ui/ErrorBanner'
 import { PasswordStrength } from '../../components/forms/PasswordStrength'
 import { FullPageSpinner } from '../../components/ui/Spinner'
-import { formatDate } from '../../lib/utils'
+import { formatDate, extractProblemDetail } from '../../lib/utils'
 import type { ProblemDetail, UserProfile } from '../../types/api'
 
-const schema = z
-  .object({
-    currentPassword: z.string().min(1, 'Aktuelles Passwort erforderlich'),
-    newPassword: z.string().min(12, 'Mindestens 12 Zeichen'),
-    confirmPassword: z.string(),
-  })
-  .refine((d) => d.newPassword === d.confirmPassword, {
-    message: 'Passwörter stimmen nicht überein',
-    path: ['confirmPassword'],
-  })
-type FormData = z.infer<typeof schema>
+function buildSchema(t: TFunction) {
+  return z
+    .object({
+      currentPassword: z.string().min(1, t('validation.currentPasswordRequired')),
+      newPassword: z.string().min(12, t('validation.passwordMin')),
+      confirmPassword: z.string(),
+    })
+    .refine((d) => d.newPassword === d.confirmPassword, {
+      message: t('validation.passwordMismatch'),
+      path: ['confirmPassword'],
+    })
+}
+type FormData = { currentPassword: string; newPassword: string; confirmPassword: string }
 
 export function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -35,12 +39,15 @@ export function ProfilePage() {
   const [watchedPassword, setWatchedPassword] = useState('')
   const { clear } = useAuthStore()
   const navigate = useNavigate()
+  const { t } = useTranslation()
+
+  const schema = useMemo(() => buildSchema(t), [t])
 
   useEffect(() => {
     getMe()
       .then((r) => setProfile(r.user))
-      .catch(() => toast.error('Profil konnte nicht geladen werden.'))
-  }, [])
+      .catch(() => toast.error(t('errors.defaultDetail')))
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const {
     register,
@@ -56,7 +63,7 @@ export function ProfilePage() {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       })
-      toast.success('Passwort geändert. Bitte neu anmelden.')
+      toast.success(t('profile.successToast'))
       clear()
       navigate('/login')
     } catch (err) {
@@ -69,43 +76,41 @@ export function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Profil</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{t('profile.title')}</h1>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-gray-800">Meine Daten</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-800">{t('profile.myData')}</h2>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-          <dt className="font-medium text-gray-500">Name</dt>
+          <dt className="font-medium text-gray-500">{t('profile.name')}</dt>
           <dd className="text-gray-900">{profile.firstName} {profile.lastName}</dd>
-          <dt className="font-medium text-gray-500">E-Mail</dt>
+          <dt className="font-medium text-gray-500">{t('profile.email')}</dt>
           <dd className="text-gray-900">{profile.email}</dd>
-          <dt className="font-medium text-gray-500">Rollen</dt>
+          <dt className="font-medium text-gray-500">{t('profile.roles')}</dt>
           <dd className="flex flex-wrap gap-1">
             {profile.roles.map((r) => <RoleBadge key={r} role={r} />)}
           </dd>
-          <dt className="font-medium text-gray-500">E-Mail verifiziert</dt>
+          <dt className="font-medium text-gray-500">{t('profile.emailVerified')}</dt>
           <dd className={profile.emailVerified ? 'text-green-600' : 'text-yellow-600'}>
-            {profile.emailVerified ? 'Ja' : 'Nein'}
+            {profile.emailVerified ? t('profile.verified') : t('profile.notVerified')}
           </dd>
           {profile.lastLoginAt && (
             <>
-              <dt className="font-medium text-gray-500">Letzter Login</dt>
+              <dt className="font-medium text-gray-500">{t('profile.lastLogin')}</dt>
               <dd className="text-gray-900">{formatDate(profile.lastLoginAt)}</dd>
             </>
           )}
-          <dt className="font-medium text-gray-500">Konto erstellt</dt>
+          <dt className="font-medium text-gray-500">{t('profile.createdAt')}</dt>
           <dd className="text-gray-900">{formatDate(profile.createdAt)}</dd>
         </dl>
       </Card>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-gray-800">Passwort ändern</h2>
-        <p className="mb-4 text-sm text-gray-500">
-          Nach der Änderung werden alle aktiven Sitzungen beendet.
-        </p>
+        <h2 className="mb-4 text-lg font-semibold text-gray-800">{t('profile.changePassword')}</h2>
+        <p className="mb-4 text-sm text-gray-500">{t('profile.changePasswordHint')}</p>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <ErrorBanner error={apiError} />
           <Input
-            label="Aktuelles Passwort"
+            label={t('profile.currentPassword')}
             type="password"
             autoComplete="current-password"
             error={errors.currentPassword?.message}
@@ -113,7 +118,7 @@ export function ProfilePage() {
           />
           <div className="space-y-2">
             <Input
-              label="Neues Passwort"
+              label={t('profile.newPassword')}
               type="password"
               autoComplete="new-password"
               error={errors.newPassword?.message}
@@ -125,14 +130,14 @@ export function ProfilePage() {
             <PasswordStrength password={watchedPassword} />
           </div>
           <Input
-            label="Passwort bestätigen"
+            label={t('profile.confirmPassword')}
             type="password"
             autoComplete="new-password"
             error={errors.confirmPassword?.message}
             {...register('confirmPassword')}
           />
           <Button type="submit" loading={isSubmitting}>
-            Passwort speichern
+            {t('profile.save')}
           </Button>
         </form>
       </Card>
