@@ -7,7 +7,9 @@ export function cn(...classes: (string | undefined | false | null)[]): string {
 
 export function formatDate(iso: string): string {
   const localeMap: Record<Language, string> = { en: 'en-US', de: 'de-DE' }
-  const locale = localeMap[i18n.language as Language] ?? 'en-US'
+  const validLangs: Language[] = ['en', 'de']
+  const lang = validLangs.includes(i18n.language as Language) ? (i18n.language as Language) : 'en'
+  const locale = localeMap[lang]
   return new Date(iso).toLocaleString(locale, {
     day: '2-digit',
     month: '2-digit',

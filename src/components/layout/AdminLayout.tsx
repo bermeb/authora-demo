@@ -2,14 +2,14 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../lib/utils'
 
+const NAV_LINKS = [
+  { to: '/admin', key: 'admin.nav.overview' as const, end: true },
+  { to: '/admin/users', key: 'admin.nav.users' as const, end: false },
+  { to: '/admin/audit-logs', key: 'admin.nav.auditLogs' as const, end: false },
+]
+
 export function AdminLayout() {
   const { t } = useTranslation()
-
-  const links = [
-    { to: '/admin', label: t('admin.nav.overview'), end: true },
-    { to: '/admin/users', label: t('admin.nav.users'), end: false },
-    { to: '/admin/audit-logs', label: t('admin.nav.auditLogs'), end: false },
-  ]
 
   return (
     <div className="flex gap-6">
@@ -18,7 +18,7 @@ export function AdminLayout() {
           <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
             Admin
           </p>
-          {links.map((l) => (
+          {NAV_LINKS.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
@@ -32,7 +32,7 @@ export function AdminLayout() {
                 )
               }
             >
-              {l.label}
+              {t(l.key)}
             </NavLink>
           ))}
         </nav>

@@ -4,12 +4,12 @@ import { useAuthStore } from '../../lib/authStore'
 import { logout } from '../../api/auth'
 import { Button } from '../ui/Button'
 import { getInitials } from '../../lib/utils'
-import { LANG_STORAGE_KEY, LANGUAGES, type Language } from '../../i18n'
+import { LanguageSelect } from '../ui/LanguageSelect'
 
 export function Navbar() {
   const { user, accessToken, refreshToken, clear } = useAuthStore()
   const navigate = useNavigate()
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   async function handleLogout() {
     if (refreshToken) {
@@ -22,21 +22,6 @@ export function Navbar() {
     clear()
     navigate('/login')
   }
-
-  function handleLanguageChange(code: Language) {
-    i18n.changeLanguage(code)
-    localStorage.setItem(LANG_STORAGE_KEY, code)
-  }
-
-  const langSelect = (
-    <select
-      value={i18n.language}
-      onChange={(e) => handleLanguageChange(e.target.value as Language)}
-      className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-    >
-      {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
-    </select>
-  )
 
   return (
     <header className="border-b border-gray-200 bg-white">
@@ -68,14 +53,14 @@ export function Navbar() {
               </div>
               {user.firstName}
             </Link>
-            {langSelect}
+            <LanguageSelect />
             <Button variant="ghost" onClick={() => { void handleLogout() }}>
               {t('nav.logout')}
             </Button>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            {langSelect}
+            <LanguageSelect />
             <Link to="/login">
               <Button variant="ghost">{t('nav.login')}</Button>
             </Link>
