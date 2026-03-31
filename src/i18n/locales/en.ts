@@ -189,8 +189,6 @@ export const en = {
     next: 'Next',
     pageOf: 'Page {{page}} of {{total}}',
     loading: 'Loading…',
-    unknownError: 'An unknown error occurred.',
-    errorOccurred: 'An error occurred.',
   },
   passwordStrength: {
     minLength: 'At least 12 characters',

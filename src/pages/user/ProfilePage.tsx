@@ -46,7 +46,7 @@ export function ProfilePage() {
   useEffect(() => {
     getMe()
       .then((r) => setProfile(r.user))
-      .catch(() => toast.error(t('common.unknownError')))
+      .catch(() => toast.error(t('errors.defaultDetail')))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const {

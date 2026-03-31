@@ -1,12 +1,13 @@
 import type { AuditEventType, ProblemDetail } from '../types/api'
-import i18n from '../i18n'
+import i18n, { type Language } from '../i18n'
 
 export function cn(...classes: (string | undefined | false | null)[]): string {
   return classes.filter(Boolean).join(' ')
 }
 
 export function formatDate(iso: string): string {
-  const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
+  const localeMap: Record<Language, string> = { en: 'en-US', de: 'de-DE' }
+  const locale = localeMap[i18n.language as Language] ?? 'en-US'
   return new Date(iso).toLocaleString(locale, {
     day: '2-digit',
     month: '2-digit',

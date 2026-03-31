@@ -189,8 +189,6 @@ export const de = {
     next: 'Weiter',
     pageOf: 'Seite {{page}} von {{total}}',
     loading: 'Lädt…',
-    unknownError: 'Ein unbekannter Fehler ist aufgetreten.',
-    errorOccurred: 'Ein Fehler ist aufgetreten.',
   },
   passwordStrength: {
     minLength: 'Mindestens 12 Zeichen',

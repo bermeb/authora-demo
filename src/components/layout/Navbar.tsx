@@ -4,7 +4,7 @@ import { useAuthStore } from '../../lib/authStore'
 import { logout } from '../../api/auth'
 import { Button } from '../ui/Button'
 import { getInitials } from '../../lib/utils'
-import { LANGUAGES, type Language } from '../../i18n'
+import { LANG_STORAGE_KEY, LANGUAGES, type Language } from '../../i18n'
 
 export function Navbar() {
   const { user, accessToken, refreshToken, clear } = useAuthStore()
@@ -25,14 +25,14 @@ export function Navbar() {
 
   function handleLanguageChange(code: Language) {
     i18n.changeLanguage(code)
-    localStorage.setItem('authora-lang', code)
+    localStorage.setItem(LANG_STORAGE_KEY, code)
   }
 
   const langSelect = (
     <select
       value={i18n.language}
       onChange={(e) => handleLanguageChange(e.target.value as Language)}
-      className="rounded border border-gray-200 bg-white px-2 py-1 text-sm text-gray-700"
+      className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
     >
       {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
     </select>
