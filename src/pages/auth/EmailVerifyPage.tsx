@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { verifyEmail } from '../../api/email'
@@ -11,8 +11,13 @@ export function EmailVerifyPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState('')
   const { t } = useTranslation()
+  // POST is non-idempotent and the token is single-use — guard against StrictMode double-invoke
+  const sentRef = useRef(false)
 
   useEffect(() => {
+    if (sentRef.current) return
+    sentRef.current = true
+
     const token = params.get('token')
     if (!token) {
       setErrorMsg(t('auth.emailVerify.noToken'))

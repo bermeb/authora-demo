@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import api from '../../lib/axios'
 import { getMe } from '../../api/profile'
@@ -7,8 +7,13 @@ import { useAuthStore } from '../../lib/authStore'
 import { Spinner } from '../../components/ui/Spinner'
 import { Card } from '../../components/ui/Card'
 
+// Backend delivers the OAuth exchange code in the URL fragment (e.g. #code=…),
+// not the query string, so the value never reaches a server log or Referer header.
+function readFromFragment(hash: string): URLSearchParams {
+  return new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash)
+}
+
 export function OAuthCallbackPage() {
-  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { setTokens, setUser } = useAuthStore()
   const [error, setError] = useState<string | null>(null)
@@ -19,8 +24,9 @@ export function OAuthCallbackPage() {
     if (called.current) return
     called.current = true
 
-    const code = searchParams.get('code')
-    const errorParam = searchParams.get('error')
+    const fragmentParams = readFromFragment(window.location.hash)
+    const code = fragmentParams.get('code')
+    const errorParam = fragmentParams.get('error')
 
     if (errorParam) {
       setError(t('auth.oauth.error', { error: errorParam }))
@@ -31,6 +37,9 @@ export function OAuthCallbackPage() {
       setError(t('auth.oauth.noCode'))
       return
     }
+
+    // Drop the fragment from the address bar so the code isn't kept in history
+    window.history.replaceState(null, '', window.location.pathname + window.location.search)
 
     api
       .post<{ accessToken: string; refreshToken: string }>('/auth/oauth2/exchange', { code })
@@ -43,7 +52,7 @@ export function OAuthCallbackPage() {
       .catch(() => {
         setError(t('auth.oauth.failed'))
       })
-  }, [searchParams, navigate, setTokens, setUser]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [navigate, setTokens, setUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (error) {
     return (

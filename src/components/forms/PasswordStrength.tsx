@@ -10,15 +10,20 @@ interface PasswordStrengthProps {
   password: string
 }
 
+// Mirrors backend default `authora.password-policy.allowed-special-characters`
+const ALLOWED_SPECIAL = "!@#$%^&*()_+-=[]{}|;':\",./<>?"
+
 export function PasswordStrength({ password }: PasswordStrengthProps) {
   const { t } = useTranslation()
+
+  const hasAllowedSpecial = [...password].some((c) => ALLOWED_SPECIAL.includes(c))
 
   const checks: Check[] = [
     { label: t('passwordStrength.minLength'), ok: password.length >= 12 },
     { label: t('passwordStrength.uppercase'), ok: /[A-Z]/.test(password) },
     { label: t('passwordStrength.lowercase'), ok: /[a-z]/.test(password) },
     { label: t('passwordStrength.digit'), ok: /\d/.test(password) },
-    { label: t('passwordStrength.special'), ok: /[^A-Za-z0-9]/.test(password) },
+    { label: t('passwordStrength.special'), ok: hasAllowedSpecial },
   ]
   const passed = checks.filter((c) => c.ok).length
   const strengthColor =

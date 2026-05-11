@@ -21,7 +21,7 @@ export const en = {
       hasAccount: 'Already registered?',
       login: 'Login',
       successTitle: 'Almost done!',
-      successMessage: 'We sent you a confirmation email. Click the link to activate your account.',
+      successMessage: 'If this email is eligible for registration, a confirmation message is on its way. Click the link to activate your account.',
       goToLogin: 'Go to login',
     },
     emailVerify: {
@@ -57,6 +57,7 @@ export const en = {
       github: 'Sign in with GitHub',
       loading: 'Completing login…',
       error: 'OAuth error: {{error}}',
+      errorTitle: 'Sign-in failed',
       noCode: 'No code received.',
       failed: 'Login failed. Please try again.',
     },
@@ -165,6 +166,7 @@ export const en = {
       filter: 'Filter',
       reset: 'Reset',
       noEntries: 'No entries found.',
+      actorBy: 'by {{email}}',
       columns: {
         time: 'Time',
         event: 'Event',

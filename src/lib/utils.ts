@@ -38,7 +38,6 @@ export function eventTypeColor(type: AuditEventType): string {
     'ACCOUNT_LOCKED',
     'ACCOUNT_DISABLED',
     'SUSPICIOUS_ACTIVITY',
-    'USER_DELETED',
   ]
   if (green.includes(type)) return 'bg-green-100 text-green-800'
   if (yellow.includes(type)) return 'bg-yellow-100 text-yellow-800'

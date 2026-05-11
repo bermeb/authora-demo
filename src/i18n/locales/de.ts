@@ -21,7 +21,7 @@ export const de = {
       hasAccount: 'Bereits registriert?',
       login: 'Anmelden',
       successTitle: 'Fast fertig!',
-      successMessage: 'Wir haben dir eine Bestätigungs-E-Mail geschickt. Klicke auf den Link, um dein Konto zu aktivieren.',
+      successMessage: 'Falls diese E-Mail-Adresse für die Registrierung freigegeben ist, ist eine Bestätigungs-E-Mail unterwegs. Klicke auf den Link, um dein Konto zu aktivieren.',
       goToLogin: 'Zur Anmeldung',
     },
     emailVerify: {
@@ -57,6 +57,7 @@ export const de = {
       github: 'Mit GitHub anmelden',
       loading: 'Anmeldung wird abgeschlossen…',
       error: 'OAuth2-Fehler: {{error}}',
+      errorTitle: 'Anmeldung fehlgeschlagen',
       noCode: 'Kein Code erhalten.',
       failed: 'Login fehlgeschlagen. Bitte erneut versuchen.',
     },
@@ -165,6 +166,7 @@ export const de = {
       filter: 'Filtern',
       reset: 'Zurücksetzen',
       noEntries: 'Keine Einträge gefunden.',
+      actorBy: 'durch {{email}}',
       columns: {
         time: 'Zeitpunkt',
         event: 'Ereignis',

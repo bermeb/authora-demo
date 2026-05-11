@@ -65,7 +65,7 @@ export function ResetPasswordPage() {
       <div className="flex min-h-[70vh] items-center justify-center">
         <Card className="w-full max-w-sm text-center">
           <p className="text-sm text-gray-600">{t('auth.resetPassword.invalidToken')}</p>
-          <Link to="/auth/password/forgot" className="mt-4 inline-block text-sm text-indigo-600 hover:underline">
+          <Link to="/forgot-password" className="mt-4 inline-block text-sm text-indigo-600 hover:underline">
             {t('auth.resetPassword.requestNew')}
           </Link>
         </Card>

@@ -128,6 +128,11 @@ export function AuditLogsPage() {
                   </td>
                   <td className="px-4 py-2.5 text-gray-600 text-xs">
                     {entry.userEmail ?? <span className="text-gray-400">–</span>}
+                    {entry.actorEmail && entry.actorEmail !== entry.userEmail && (
+                      <div className="text-[10px] text-gray-400">
+                        {t('admin.auditLogs.actorBy', { email: entry.actorEmail })}
+                      </div>
+                    )}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 font-mono text-xs text-gray-500">
                     {entry.ipAddress}

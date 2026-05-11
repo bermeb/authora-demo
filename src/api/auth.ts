@@ -1,13 +1,13 @@
 import api from '../lib/axios'
-import type { TokenResponse, RegisterResponse, SuccessResponse } from '../types/api'
+import type { TokenResponse, SuccessResponse } from '../types/api'
 
 export async function register(data: {
   firstName: string
   lastName: string
   email: string
   password: string
-}): Promise<RegisterResponse> {
-  const res = await api.post<RegisterResponse>('/auth/register', data)
+}): Promise<SuccessResponse> {
+  const res = await api.post<SuccessResponse>('/auth/register', data)
   return res.data
 }
 

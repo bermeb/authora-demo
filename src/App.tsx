@@ -11,6 +11,7 @@ import { EmailVerifyPage } from './pages/auth/EmailVerifyPage'
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage'
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage'
 import { OAuthCallbackPage } from './pages/auth/OAuthCallbackPage'
+import { OAuth2ErrorPage } from './pages/auth/OAuth2ErrorPage'
 import { DashboardPage } from './pages/user/DashboardPage'
 import { ProfilePage } from './pages/user/ProfilePage'
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
@@ -34,10 +35,11 @@ export default function App() {
           {/* Public */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/auth/email/verify" element={<EmailVerifyPage />} />
-          <Route path="/auth/password/forgot" element={<ForgotPasswordPage />} />
-          <Route path="/auth/password/reset" element={<ResetPasswordPage />} />
+          <Route path="/verify-email" element={<EmailVerifyPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/oauth2/callback" element={<OAuthCallbackPage />} />
+          <Route path="/oauth2/error" element={<OAuth2ErrorPage />} />
 
           {/* Protected */}
           <Route element={<ProtectedRoute />}>

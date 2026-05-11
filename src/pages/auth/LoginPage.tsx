@@ -82,7 +82,7 @@ export function LoginPage() {
         </form>
         <div className="mt-4 space-y-1 text-center text-sm text-gray-600">
           <p>
-            <Link to="/auth/password/forgot" className="text-indigo-600 hover:underline">
+            <Link to="/forgot-password" className="text-indigo-600 hover:underline">
               {t('auth.login.forgotPassword')}
             </Link>
           </p>

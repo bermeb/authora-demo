@@ -37,12 +37,6 @@ export interface TokenRefreshResponse {
   expiresIn: number
 }
 
-export interface RegisterResponse {
-  success: boolean
-  message: string
-  userId: string
-}
-
 export interface SuccessResponse {
   success: boolean
   message: string
@@ -70,7 +64,6 @@ export type AuditEventType =
   | 'ACCOUNT_ENABLED'
   | 'ROLE_ASSIGNED'
   | 'ROLE_REMOVED'
-  | 'USER_DELETED'
   | 'RATE_LIMIT_EXCEEDED'
   | 'INVALID_TOKEN'
   | 'SUSPICIOUS_ACTIVITY'
@@ -79,6 +72,8 @@ export interface AuditLogEntry {
   id: string
   userId?: string
   userEmail?: string
+  actorUserId?: string
+  actorEmail?: string
   eventType: AuditEventType
   details?: string
   ipAddress: string
